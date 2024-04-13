@@ -1,4 +1,5 @@
 (executable
  (public_name mindwell)
  (name main)
- (libraries mindwell))
+ (flags (:standard -warn-error "-unused-value-declaration"))
+ (libraries mindwell caqti caqti-lwt caqti-driver-sqlite3 dream))

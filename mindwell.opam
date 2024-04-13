@@ -12,6 +12,10 @@ bug-reports: "https://github.com/username/reponame/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.12"}
+  "dream"
+  "caqti"
+  "caqti-lwt"
+  "caqti-driver-sqlite3"
   "odoc" {with-doc}
 ]
 build: [
