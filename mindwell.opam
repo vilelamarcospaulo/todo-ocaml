@@ -16,6 +16,7 @@ depends: [
   "caqti"
   "caqti-lwt"
   "caqti-driver-sqlite3"
+  "ppx_yojson_conv"
   "odoc" {with-doc}
 ]
 build: [

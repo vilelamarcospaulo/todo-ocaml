@@ -19,7 +19,14 @@
  (name mindwell)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml dune dream caqti caqti-lwt caqti-driver-sqlite3)
+ (depends
+  ocaml
+  dune
+  dream
+  caqti
+  caqti-lwt
+  caqti-driver-sqlite3
+  ppx_yojson_conv)
  (tags
   (topics "to describe" your project)))
 

@@ -1,2 +1,5 @@
 (library
- (name mindwell))
+ (name mindwell)
+ (libraries caqti caqti-lwt caqti-driver-sqlite3 dream ppx_yojson_conv)
+ (preprocess
+  (pps ppx_yojson_conv)))
