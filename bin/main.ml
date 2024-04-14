@@ -3,8 +3,6 @@ open Lwt.Infix
 
 let sql_uri = "sqlite3:db.sqlite"
 
-module Todo = Mindwell.Todo
-
 type _ Todo.error += InvalidJson
 
 (* maybe we can use some combination of monads Lwt and Result to remove this custom impl*)

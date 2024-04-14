@@ -1,6 +1,6 @@
 (lang dune 3.12)
 
-(name mindwell)
+(name todo)
 
 (generate_opam_files true)
 
@@ -16,7 +16,7 @@
 (documentation https://url/to/documentation)
 
 (package
- (name mindwell)
+ (name todo)
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends

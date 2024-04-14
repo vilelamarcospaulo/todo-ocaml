@@ -1,14 +1,8 @@
 (executable
- (public_name mindwell)
+ (public_name todo)
  (name main)
  (flags
   (:standard -warn-error "-unused-value-declaration"))
- (libraries
-  mindwell
-  caqti
-  caqti-lwt
-  caqti-driver-sqlite3
-  dream
-  ppx_yojson_conv)
+ (libraries todo caqti caqti-lwt caqti-driver-sqlite3 dream ppx_yojson_conv)
  (preprocess
   (pps ppx_yojson_conv)))
