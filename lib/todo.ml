@@ -13,6 +13,7 @@ type t = {
 
 type t_new_item = { title : string; description : string } [@@deriving yojson]
 type _ error = ..
+type _ error += RecordNotFound
 type _ error += DBError of string
 
 module Q = struct
@@ -27,7 +28,11 @@ module Q = struct
     T.tup2 T.string T.string
     ->! T.tup4 T.int T.string T.string (T.option T.ptime)
     @@ "INSERT INTO todos (title, description) VALUES (?, ?) RETURNING id, \
-        title, description, completed_at"
+        title, description, completed_at;"
+
+  let by_id =
+    (T.int ->! T.tup4 T.int T.string T.string (T.option T.ptime))
+    @@ "SELECT id, title, description, completed_at FROM todos WHERE id = ?;"
 
   let tuple_to_t (id, title, description, completed_at_as_time) =
     let time_to_int v =
@@ -45,3 +50,12 @@ let create_item (module Db : DB) new_item =
   match result with
   | Ok row -> Lwt.return_ok @@ Q.tuple_to_t row
   | Error err -> Lwt.return_error @@ DBError (Caqti_error.show err)
+
+let by_id (module Db : DB) id =
+  let* result = Db.find_opt Q.by_id id in
+  match result with
+  | Error err -> Lwt.return_error @@ DBError (Caqti_error.show err)
+  | Ok row -> (
+      match row with
+      | Some row -> Lwt.return_ok @@ Q.tuple_to_t row
+      | None -> Lwt.return_error RecordNotFound)

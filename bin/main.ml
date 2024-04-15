@@ -31,17 +31,23 @@ let to_resp result ~to_json =
       | Todo.DBError s ->
           Dream.error (fun log -> log "[DBError] :: %s " s);
           Dream.json ~code:500 "Internal dabase error"
+      | Todo.RecordNotFound -> Dream.json ~code:404 "Record Not found"
       | _ -> Dream.json ~code:500 "Internal server error")
 
 let create_todo_handler req db =
   from_body req Todo.t_new_item_of_yojson
   >>@ Todo.create_item db >>= to_resp ~to_json
 
+let query_todo_hander _req id db =
+  Todo.by_id db (int_of_string id) >>= to_resp ~to_json
+
 let _ =
   Dream.run @@ Dream.logger @@ Dream.sql_pool sql_uri
   @@ Dream.router
        [
          Dream.get "/" (fun _ -> Dream.html "Hello, world!");
-         Dream.post "/todo" (fun req ->
+         Dream.post "/todos" (fun req ->
              Dream.sql req @@ create_todo_handler req);
+         Dream.get "/todos/:id" (fun req ->
+             Dream.sql req @@ query_todo_hander req (Dream.param req "id"));
        ]
