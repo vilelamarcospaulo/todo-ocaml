@@ -37,7 +37,7 @@ let query_todo_handler id _req db =
 let routes =
   Dream.router
     [
-      Dream.get "/" (fun _ -> Dream.html "Todo's");
+      Dream.get "/" (fun _ -> Dream.html "Todo's API");
       Dream.post "/todos" (fun req -> Dream.sql req @@ create_todo_handler req);
       Dream.get "/todos/:id" (fun req ->
           let id = Dream.param req "id" in

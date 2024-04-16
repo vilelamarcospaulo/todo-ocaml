@@ -21,8 +21,12 @@ Once you have installed the dependencies, you can clone this repository and run 
  PS: it's recommended to use a local `opam switch` to avoid conflicts with other projects.
  
 Usage
-`$ dune build && dune exec todo`
+`$ dune exec todo`
 
+## Testing
+The project is using the default library `alcotest` for testing. To run the tests, you can use the following command:
+
+    $ dune test
 
 ## Development
 #####  Basic CRUD
@@ -50,3 +54,5 @@ If you are interested in extending the Todo application, I encourage you to expl
 The Todo application is a simple but useful example of how to use the OCaml programming language and the Dream web framework. I hope you found this project helpful.
 
 Dream framework website: https://aantron.github.io/dream/
+
+Based from ideas in: https://fsharpforfunandprofit.com/rop/

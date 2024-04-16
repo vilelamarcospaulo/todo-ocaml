@@ -20,6 +20,8 @@
  (synopsis "A short synopsis")
  (description "A longer description")
  (depends
+  alcotest
+  alcotest-lwt
   ocaml
   dune
   dream

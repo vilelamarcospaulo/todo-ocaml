@@ -10,6 +10,8 @@ homepage: "https://github.com/username/reponame"
 doc: "https://url/to/documentation"
 bug-reports: "https://github.com/username/reponame/issues"
 depends: [
+  "alcotest"
+  "alcotest-lwt"
   "ocaml"
   "dune" {>= "3.12"}
   "dream"
