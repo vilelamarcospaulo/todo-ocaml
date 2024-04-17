@@ -1,3 +1,4 @@
+
 # Todo (OCaml + Dream)
 
 This project is a simple Todo application built using the OCaml programming language and the Dream web framework. It is intended to serve as a learning exercise for both languages.
@@ -29,8 +30,14 @@ The project is using the default library `alcotest` for testing. To run the test
     $ dune test
 
 ## Development
-#####  Basic CRUD
- - [X] POST `/todos`
+##### Migration lib
+ - [ ] Exec table creation on startup, will be used to integration tests also. `working on this`.
+ - [ ] Handle migration sequence and state in database.
+
+##### Basic CRUD
+ - [X] POST `/todos`  
+	missing tests, on hold for the migration lib.
+
  - [ ] GET `/todos/:id`
  - [ ] DELETE `/todos/:id`
  - [ ] POST `/todos/:id/complete`
