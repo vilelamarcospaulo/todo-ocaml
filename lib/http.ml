@@ -5,34 +5,39 @@ module Err = Server_error
 (* maybe we can use some combination of monads Lwt and Result to remove this custom impl*)
 (* ps: this assumes all processing steps are Lwt.t and will always return a Result (a, e) *)
 let _bind (promisse : ('a, 'e) result Lwt.t) (f : 'a -> ('b, 'e) result Lwt.t) =
-  promisse
-  >>= fun result ->
-  match result with Ok x -> f x | Error e -> Lwt.return_error e
+  promisse >>= fun result -> match result with Ok x -> f x | Error e -> Lwt.return_error e
 
 let ( >>@ ) = _bind
 
-let from_body req ty_of_yojson =
-  let* body = Dream.body req in
-  try Lwt.return_ok @@ (body |> Yojson.Safe.from_string |> ty_of_yojson)
-  with Failure _ -> Lwt.return_error Err.InvalidJson
+let _result_bind (promisse : ('a, 'e) result Lwt.t) (f : 'a -> ('b, 'e) result) =
+  _bind promisse (fun x -> Lwt.return @@ f x)
+
+let ( >> ) = _result_bind
+
+let from_json ty_of_yojson str =
+  try Result.Ok (str |> Yojson.Safe.from_string |> ty_of_yojson)
+  with _ -> Result.error Err.InvalidJson
 
 let to_json yojson_of_t value =
-  try Lwt.return_ok @@ (value |> yojson_of_t |> Yojson.Safe.to_string)
-  with Failure _ -> Lwt.return_error Err.InvalidJson
+  try Result.ok (value |> yojson_of_t |> Yojson.Safe.to_string)
+  with _ -> Result.error Err.InvalidJson
 
-let to_resp result =
-  match result with
-  | Ok result -> Dream.json ~code:200 result
-  | Error e -> Err.to_response e
+let from_body req ty_of_yojson =
+  let* body = Dream.body req in
+  Lwt.return @@ from_json ty_of_yojson body
+
+let json_response result =
+  match result with Ok result -> Dream.json ~code:200 result | Error e -> Err.to_response e
+
+let foo = Lwt.map @@ to_json Item.yojson_of_t
 
 let create_todo_handler req db =
   from_body req Item.t_new_item_of_yojson
   >>@ Item.create_item db
-  >>@ to_json Item.yojson_of_t
-  >>= to_resp
+  >> to_json Item.yojson_of_t
+  >>= json_response
 
-let query_todo_handler id _req db =
-  Item.by_id db id >>@ to_json Item.yojson_of_t >>= to_resp
+let query_todo_handler id _req db = Item.by_id db id >> to_json Item.yojson_of_t >>= json_response
 
 let routes =
   Dream.router

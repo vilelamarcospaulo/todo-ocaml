@@ -1,4 +1,4 @@
-type t = DBError of string | InvalidJson | RecordNotFound
+type t_error = DBError of string | InvalidJson | RecordNotFound
 
 let to_response = function
   | InvalidJson -> Dream.json ~code:400 "Invalid request"

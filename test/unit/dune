@@ -1,0 +1,5 @@
+(test
+ (name test_unit)
+ (libraries alcotest dream lwt lwt.unix ppx_yojson_conv todo)
+ (preprocess
+  (pps ppx_yojson_conv)))

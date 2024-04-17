@@ -1,3 +1,7 @@
 (test
  (name test_todo)
- (libraries alcotest alcotest-lwt dream todo))
+ (flags
+  (:standard -warn-error "-unused-value-declaration"))
+ (libraries alcotest alcotest-lwt dream todo ppx_yojson_conv)
+ (preprocess
+  (pps ppx_yojson_conv)))
