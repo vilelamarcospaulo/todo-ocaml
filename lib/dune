@@ -1,5 +1,5 @@
 (library
  (name todo)
- (libraries caqti caqti-lwt caqti-driver-sqlite3 dream ppx_yojson_conv)
+ (libraries caqti caqti-lwt caqti-driver-sqlite3 dream ppx_deriving ppx_yojson_conv)
  (preprocess
-  (pps ppx_yojson_conv)))
+  (pps ppx_deriving.show ppx_yojson_conv)))

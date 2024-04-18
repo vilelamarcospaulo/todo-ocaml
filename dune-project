@@ -28,6 +28,7 @@
   caqti
   caqti-lwt
   caqti-driver-sqlite3
+  ppx_deriving
   ppx_yojson_conv)
  (tags
   (topics "to describe" your project)))

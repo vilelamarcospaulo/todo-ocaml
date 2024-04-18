@@ -3,7 +3,7 @@ open Lwt.Syntax
 let dream_runner ?db_uri =
   let db_uri = Option.value db_uri ~default:"sqlite3:db_test.sqlite" in
 
-  Todo.Migration.run db_uri;
+  Todo.Migration.run db_uri ~down_all:true;
   Dream.test @@ Dream.sql_pool db_uri Todo.Http.routes
 
 let test_home _switch () =

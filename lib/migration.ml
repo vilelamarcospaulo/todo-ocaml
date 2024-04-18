@@ -8,24 +8,37 @@ module Q = struct
   module T = Caqti_type
 
   let create_todo_table =
-    ( "todos_table_creation",
+    ( "create | todos_table",
       (T.unit ->. T.unit)
+      (*up*)
       @@ "CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, title  \
-          VARCHAR(20)  NOT NULL,  description VARCHAR(100) NOT NULL,  completed_at DATETIME)" )
+          VARCHAR(20)  NOT NULL,  description VARCHAR(100) NOT NULL,  completed_at DATETIME);",
+      (*down*)
+      (T.unit ->. T.unit) @@ "DROP TABLE IF EXISTS todos;" )
 
   let migrations = [ create_todo_table ]
 end
 
-let execute (module Db : Db) =
-  let rec loop = function
-    | [] -> Lwt.return_unit
-    | (id, query) :: xs ->
-        print_endline ("Running migration: " ^ id);
-        let* _ = Db.exec query () in
-        loop xs
-  in
-  loop Q.migrations
+module Executor = struct
+  type direction = Up | Down [@@deriving show]
 
-let run connection_string =
+  let migrate drop (module Db : Db) =
+    let rec loop direction = function
+      | [] -> Lwt.return_unit
+      | (id, up, down) :: xs ->
+          print_endline ("Running migration: " ^ id ^ " | " ^ show_direction direction);
+
+          let command = match direction with Up -> up | Down -> down in
+          let* _ = Db.exec command () in
+
+          loop direction xs
+    in
+
+    if drop then loop Down (List.rev Q.migrations) >>= fun _ -> loop Up Q.migrations
+    else loop Up Q.migrations
+end
+
+let run ?(down_all = false) connection_string =
   let connection_uri = Uri.of_string connection_string in
-  Lwt_main.run @@ (Caqti_lwt.connect connection_uri >>= Caqti_lwt.or_fail >>= execute)
+  Lwt_main.run
+  @@ (Caqti_lwt.connect connection_uri >>= Caqti_lwt.or_fail >>= Executor.migrate down_all)
