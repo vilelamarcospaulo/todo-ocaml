@@ -31,19 +31,17 @@ The project is using the default library `alcotest` for testing. To run the test
 
 ## Development
 ##### Migration lib
- - [ ] Exec table creation on startup, will be used to integration tests also. `working on this`.
- - [ ] Handle migration sequence and state in database.
+ - [X] Exec table creation on startup, will be used to integration tests also.
+ - [ ] Handle migration sequence and state in database. `Not needed for now`
 
 ##### Basic CRUD
  - [X] POST `/todos`  
-	missing tests, on hold for the migration lib.
-
  - [ ] GET `/todos/:id`
  - [ ] DELETE `/todos/:id`
  - [ ] POST `/todos/:id/complete`
 
 ##### JWT Session - Enable Social Login
-- [ ]  Google oauth2
+- [ ] Google oauth2
 - [ ] Apple oauth2
 
 #####  Ownership 
