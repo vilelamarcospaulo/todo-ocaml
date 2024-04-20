@@ -53,9 +53,8 @@ let test_create_todo_successfully (module Db : DB) () =
   ()
 
 let _ =
-  Todo.Migration.run connection_string ~down_all:true;
-
   let db_conn = Lwt_main.run @@ Todo.Migration.conn connection_string in
+  Todo.Migration.run db_conn ~down_all:true;
 
   Alcotest.run "API /"
     [

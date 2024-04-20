@@ -42,5 +42,4 @@ let conn connection_string =
   let connection_uri = Uri.of_string connection_string in
   Caqti_lwt.connect connection_uri >>= Caqti_lwt.or_fail
 
-let run ?(down_all = false) connection_string =
-  Lwt_main.run @@ (conn connection_string >>= Executor.migrate down_all)
+let run ?(down_all = false) conn = Lwt_main.run @@ Executor.migrate down_all conn
