@@ -29,6 +29,16 @@ module BddTestFlow = struct
   let then_the_body_should_be (expected : string) (response : response) =
     Alcotest.(check string) "Check response body" expected response.body;
     response
+
+  let then_db_should_have_n expected (module Db : DB) query_count (response : response) =
+    let db_count = Lwt_main.run @@ Db.find query_count () in
+    let count = match db_count with Ok count -> count | _ -> Alcotest.failf "Error" in
+
+    Alcotest.(check int) "Check the number of items by db_query" expected count;
+    response
+
+  let then_db_should_not_have_any_items (module Db : DB) query_count (response : response) =
+    then_db_should_have_n 0 (module Db) query_count response
 end
 
 open BddTestFlow
@@ -45,13 +55,8 @@ let test_create_todo_invalid_payload (module Db : DB) () =
 
   given_the_request request
   >!> then_the_status_should_be 400
-  >! then_the_body_should_be "Invalid request";
-
-  let db_items = Lwt_main.run @@ Db.collect_list Todo.Item.Q.all () in
-  let count = match db_items with Ok items -> List.length items | _ -> Alcotest.failf "Error" in
-  Alcotest.(check int) "Check the number of items" 0 count;
-
-  ()
+  >!> then_the_body_should_be "Invalid request"
+  >! then_db_should_not_have_any_items (module Db) Todo.Item.Q.all
 
 let test_create_todo_successfully (module Db : DB) () =
   let request =
@@ -60,14 +65,9 @@ let test_create_todo_successfully (module Db : DB) () =
 
   given_the_request request
   >!> then_the_status_should_be 200
-  >! then_the_body_should_be
-       "{\"id\":1,\"title\":\"foo\",\"description\":\"bar\",\"completedAt\":null}";
-
-  let db_items = Lwt_main.run @@ Db.collect_list Todo.Item.Q.all () in
-  let count = match db_items with Ok items -> List.length items | _ -> Alcotest.failf "Error" in
-  Alcotest.(check int) "Check the number of items" 1 count;
-
-  ()
+  >!> then_the_body_should_be
+        "{\"id\":1,\"title\":\"foo\",\"description\":\"bar\",\"completedAt\":null}"
+  >! then_db_should_have_n 1 (module Db) Todo.Item.Q.all
 
 let _ =
   let db_conn = Lwt_main.run @@ Todo.Migration.conn connection_string in

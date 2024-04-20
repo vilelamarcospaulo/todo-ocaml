@@ -22,9 +22,7 @@ module Q = struct
     @@ "INSERT INTO todos (title, description) VALUES (?, ?) RETURNING id, title, description, \
         completed_at;"
 
-  let all =
-    (T.unit ->! T.tup4 T.int T.string T.string (T.option T.ptime))
-    @@ "SELECT id, title, description, completed_at FROM todos;"
+  let all = (T.unit ->! T.int) @@ "SELECT count(id) FROM todos;"
 
   let by_id =
     (T.int ->! T.tup4 T.int T.string T.string (T.option T.ptime))
