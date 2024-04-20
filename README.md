@@ -36,7 +36,7 @@ The project is using the default library `alcotest` for testing. To run the test
 
 ##### Basic CRUD
  - [X] POST `/todos`  
- - [ ] GET `/todos/:id`
+ - [X] GET `/todos/:id`
  - [ ] DELETE `/todos/:id`
  - [ ] POST `/todos/:id/complete`
 
