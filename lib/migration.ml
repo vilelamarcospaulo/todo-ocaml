@@ -38,7 +38,9 @@ module Executor = struct
     else loop Up Q.migrations
 end
 
-let run ?(down_all = false) connection_string =
+let conn connection_string =
   let connection_uri = Uri.of_string connection_string in
-  Lwt_main.run
-  @@ (Caqti_lwt.connect connection_uri >>= Caqti_lwt.or_fail >>= Executor.migrate down_all)
+  Caqti_lwt.connect connection_uri >>= Caqti_lwt.or_fail
+
+let run ?(down_all = false) connection_string =
+  Lwt_main.run @@ (conn connection_string >>= Executor.migrate down_all)

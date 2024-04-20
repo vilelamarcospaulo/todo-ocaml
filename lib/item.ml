@@ -4,12 +4,7 @@ open Server_error
 
 module type DB = Caqti_lwt.CONNECTION
 
-type t = {
-  id : int;
-  title : string;
-  description : string;
-  completedAt : int option;
-}
+type t = { id : int; title : string; description : string; completedAt : int option }
 [@@deriving yojson]
 
 type t_new_item = { title : string; description : string } [@@deriving yojson]
@@ -23,10 +18,13 @@ module Q = struct
   (* https://github.com/paurkedal/ocaml-caqti/issues/100 *)
 
   let reg_item =
-    T.tup2 T.string T.string
-    ->! T.tup4 T.int T.string T.string (T.option T.ptime)
-    @@ "INSERT INTO todos (title, description) VALUES (?, ?) RETURNING id, \
-        title, description, completed_at;"
+    (T.tup2 T.string T.string ->! T.tup4 T.int T.string T.string (T.option T.ptime))
+    @@ "INSERT INTO todos (title, description) VALUES (?, ?) RETURNING id, title, description, \
+        completed_at;"
+
+  let all =
+    (T.unit ->! T.tup4 T.int T.string T.string (T.option T.ptime))
+    @@ "SELECT id, title, description, completed_at FROM todos;"
 
   let by_id =
     (T.int ->! T.tup4 T.int T.string T.string (T.option T.ptime))
@@ -34,16 +32,14 @@ module Q = struct
 
   let tuple_to_t (id, title, description, completed_at_as_time) =
     let time_to_int v =
-      match v with
-      | Some x -> Ptime.to_span x |> Ptime.Span.to_int_s
-      | None -> None
+      match v with Some x -> Ptime.to_span x |> Ptime.Span.to_int_s | None -> None
     in
     let completedAt = time_to_int completed_at_as_time in
 
     { id; title; description; completedAt }
 end
 
-let create_item (module Db : DB) new_item =
+let create_item (module Db : DB) (new_item : t_new_item) =
   let* result = Db.find Q.reg_item (new_item.title, new_item.description) in
   match result with
   | Ok row -> Lwt.return_ok @@ Q.tuple_to_t row
