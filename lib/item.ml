@@ -28,6 +28,10 @@ module Q = struct
     (T.int ->! T.tup4 T.int T.string T.string (T.option T.ptime))
     @@ "SELECT id, title, description, completed_at FROM todos WHERE id = ?;"
 
+  let delete_by_id =
+    (T.int ->! T.tup4 T.int T.string T.string (T.option T.ptime))
+    @@ "DELETE FROM todos WHERE id = ? RETURNING id, title, description, completed_at;"
+
   let tuple_to_t (id, title, description, completed_at_as_time) =
     let time_to_int v =
       match v with Some x -> Ptime.to_span x |> Ptime.Span.to_int_s | None -> None
@@ -45,6 +49,15 @@ let create_item (module Db : DB) (new_item : t_new_item) =
 
 let by_id (module Db : DB) id =
   let* result = Db.find_opt Q.by_id id in
+  match result with
+  | Error err -> Lwt.return_error @@ DBError (Caqti_error.show err)
+  | Ok row -> (
+      match row with
+      | Some row -> Lwt.return_ok @@ Q.tuple_to_t row
+      | None -> Lwt.return_error RecordNotFound)
+
+let delete_by_id (module Db : DB) id =
+  let* result = Db.find_opt Q.delete_by_id id in
   match result with
   | Error err -> Lwt.return_error @@ DBError (Caqti_error.show err)
   | Ok row -> (

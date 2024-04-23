@@ -19,6 +19,7 @@ let ( >! ) = finish
 let ( >!> ) = bind
 let given_the_request request = { request; response = None; db = None }
 let with_db db context = { context with db = Some db }
+let then_given_a_new_request req _context = given_the_request req
 
 let when_the_request_is_sent context =
   let req = context.request in

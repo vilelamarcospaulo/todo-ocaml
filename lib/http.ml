@@ -39,6 +39,9 @@ let create_todo_handler req db =
 
 let query_todo_handler id _req db = Item.by_id db id >> to_json Item.yojson_of_t >>= json_response
 
+let delete_todo_handler id _req db =
+  Item.delete_by_id db id >> to_json Item.yojson_of_t >>= json_response
+
 let routes =
   Dream.router
     [
@@ -47,4 +50,7 @@ let routes =
       Dream.get "/todos/:id" (fun req ->
           let id = Dream.param req "id" in
           Dream.sql req @@ query_todo_handler (int_of_string id) req);
+      Dream.delete "/todos/:id" (fun req ->
+          let id = Dream.param req "id" in
+          Dream.sql req @@ delete_todo_handler (int_of_string id) req);
     ]
