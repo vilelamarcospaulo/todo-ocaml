@@ -21,6 +21,9 @@ let given_the_request request = { request; response = None; db = None }
 let with_db db context = { context with db = Some db }
 let then_given_a_new_request req _context = given_the_request req
 
+let then_follow_a_new_request (req_builder : 'a context -> request) context =
+  then_given_a_new_request (req_builder context) context
+
 let when_the_request_is_sent context =
   let req = context.request in
   let result = dream_runner @@ req in
@@ -42,6 +45,9 @@ let then_the_body_should_be expected context =
 
   Alcotest.(check string) "Check response body" expected response.body;
   context
+
+let then_the_body_should_be_lazy (expect : string ref) context =
+  then_the_body_should_be !expect context
 
 let after_parse_the_body ty_of_yojson context =
   let response = Option.get context.response in

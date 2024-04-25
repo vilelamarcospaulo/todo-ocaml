@@ -37,7 +37,7 @@ The project is using the default library `alcotest` for testing. To run the test
 ##### Basic CRUD
  - [X] POST `/todos`  
  - [X] GET `/todos/:id`
- - [ ] DELETE `/todos/:id`
+ - [X] DELETE `/todos/:id`
  - [ ] POST `/todos/:id/complete`
 
 ##### JWT Session - Enable Social Login
