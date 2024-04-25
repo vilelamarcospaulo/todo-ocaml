@@ -35,7 +35,7 @@ let test_to_json () =
     "Is a valid Return" "{\"title\": \"foo\", \"description\":\"bar\"}"
     (Result.get_ok generated_json)
 
-let json_suit =
+let json_suite =
   ( "JSON aux",
     [
       ( "build strcture from_json",

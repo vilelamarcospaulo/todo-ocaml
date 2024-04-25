@@ -2,6 +2,4 @@
  (name test_todo)
  (flags
   (:standard -warn-error "-unused-value-declaration"))
- (libraries alcotest alcotest-lwt dream todo ppx_yojson_conv)
- (preprocess
-  (pps ppx_yojson_conv)))
+ (libraries alcotest dream flow test_api todo))

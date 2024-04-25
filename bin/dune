@@ -3,6 +3,5 @@
  (name main)
  (flags
   (:standard -warn-error "-unused-value-declaration"))
- (libraries todo caqti caqti-lwt caqti-driver-sqlite3 dream ppx_yojson_conv)
- (preprocess
-  (pps ppx_yojson_conv)))
+ (libraries todo dream)
+)
