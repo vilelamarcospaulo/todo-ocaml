@@ -22,7 +22,7 @@ Once you have installed the dependencies, you can clone this repository and run 
  PS: it's recommended to use a local `opam switch` to avoid conflicts with other projects.
  
 Usage
-`$ dune exec todo`
+`$ dune exec migration && dune exec todo`
 
 ## Testing
 The project is using the default library `alcotest` for testing. To run the tests, you can use the following command:
