@@ -1,4 +1,4 @@
 (executable
  (public_name todo)
  (name main)
- (libraries todo dream))
+ (libraries todo dream sysmap))

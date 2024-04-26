@@ -1,32 +1,31 @@
 module type DB = Caqti_lwt.CONNECTION
 
-let connection_string = "sqlite3:db_test.sqlite"
-let dream_runner = Dream.test @@ Dream.sql_pool connection_string @@ Todo.Http.routes
-
 type 'a response = { status : int; body : string; parsed_body : 'a option }
 type request = Dream.request
-type 'a context = { request : request; db : (module DB) option; response : 'a response option }
+type runner = Dream.request -> Dream.response
+
+type 'a context = {
+  runner : runner;
+  db : (module DB);
+  request : request option;
+  response : 'a response option;
+}
+
 type 'a step = 'a context -> 'a context
 
 let bind (ctx : 'a context) (f : 'a step) = f ctx
-
-(* only needed to more readble sequence with Alcotest *)
-let finish (ctx : 'a context) (f : 'a step) =
-  let _result = f ctx in
-  ()
-
-let ( >! ) = finish
 let ( >!> ) = bind
-let given_the_request request = { request; response = None; db = None }
-let with_db db context = { context with db = Some db }
-let then_given_a_new_request req _context = given_the_request req
+
+(**)
+let setup runner db = { runner; db; request = None; response = None }
+let given_the_request request context = { context with request = Some request }
 
 let then_follow_a_new_request (req_builder : 'a context -> request) context =
-  then_given_a_new_request (req_builder context) context
+  let new_request = req_builder context in
+  { context with request = Some new_request; response = None }
 
 let when_the_request_is_sent context =
-  let req = context.request in
-  let result = dream_runner @@ req in
+  let result = context.runner (Option.get context.request) in
   let received_status = result |> Dream.status |> Dream_pure.Status.status_to_int in
   let received_body = Lwt_main.run @@ Dream.body result in
 
@@ -65,9 +64,8 @@ let then_body_should_apply_to (f : 'a -> bool) context =
   context
 
 let then_db_should_have_n expected query_count context =
-  let db = Option.get context.db in
   let inner_db_count (module Db : DB) = Lwt_main.run @@ Db.find query_count () in
-  let count = Result.get_ok @@ inner_db_count db in
+  let count = Result.get_ok @@ inner_db_count context.db in
 
   Alcotest.(check int) "Check the number of items by db_query" expected count;
 

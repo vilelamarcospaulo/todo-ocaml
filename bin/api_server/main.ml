@@ -1,3 +1,6 @@
-let sql_uri = "sqlite3:db.sqlite"
-let routes = Todo.Http.routes
-let _ = Dream.run @@ Dream.logger @@ Dream.sql_pool sql_uri @@ routes
+let _ =
+  Dream.run
+  @@ Dream.memory_sessions
+  @@ Dream.logger
+  @@ Dream.sql_pool Sysmap.env_config.db_uri
+  @@ Todo.Http.routes

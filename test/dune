@@ -2,4 +2,4 @@
  (name test_todo)
  (flags
   (:standard -warn-error "-unused-value-declaration"))
- (libraries alcotest dream flow test_api todo))
+ (libraries alcotest dream flow test_api todo sysmap))
