@@ -1,7 +1,0 @@
-(executable
- (public_name todo)
- (name main)
- (flags
-  (:standard -warn-error "-unused-value-declaration"))
- (libraries todo dream)
-)
