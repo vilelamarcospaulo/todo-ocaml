@@ -15,10 +15,10 @@ let test_fetch_todo_by_id setup =
 
   create_todo setup
   >!> then_follow_a_new_request (fun ctx ->
-          let created_item : Todo.Item.t = Flow.Hack.extract_item ctx in
+          let created_item : Todo.Item.item = Flow.Hack.extract_item ctx in
           let url = "/todos/" ^ string_of_int created_item.id in
 
-          expected_body := Todo.Item.yojson_of_t created_item |> Yojson.Safe.to_string;
+          expected_body := Todo.Item.yojson_of_item created_item |> Yojson.Safe.to_string;
 
           Dream.request ~method_:`GET ~target:url "")
   >!> when_the_request_is_sent
