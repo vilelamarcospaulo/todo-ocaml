@@ -18,7 +18,7 @@ module Q = struct
 
   let all =
     (T.unit ->* T.tup4 T.int T.string T.string (T.option T.ptime))
-    @@ "select id, title, description, completed_at from todos where id = ?;"
+    @@ "SELECT id, title, description, completed_at FROM todos;"
 
   let query (module Db : DB) (page_params : Sql.Page.page_params_opt) =
     match page_params with
@@ -30,6 +30,7 @@ module Q = struct
           (T.tup2 T.int T.int ->* T.tup4 T.int T.string T.string (T.option T.ptime))
           @@ "SELECT id, title, description, completed_at FROM todos OFFSET ? LIMIT ?;"
         in
+
         Db.collect_list catqi_query (offset, limit)
 
   let count_all = (T.unit ->! T.int) @@ "SELECT count(id) FROM todos;"

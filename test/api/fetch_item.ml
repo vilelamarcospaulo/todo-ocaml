@@ -8,7 +8,7 @@ let test_fetch_unexistend setup =
   >!> given_the_request request
   >!> when_the_request_is_sent
   >!> then_the_status_should_be 404
-  >!> then_the_body_should_be "Record not found"
+  >! then_the_body_should_be "Record not found"
 
 let test_fetch_todo_by_id setup =
   let expected_body = ref "" in
@@ -23,7 +23,7 @@ let test_fetch_todo_by_id setup =
           Dream.request ~method_:`GET ~target:url "")
   >!> when_the_request_is_sent
   >!> then_the_status_should_be 200
-  >!> then_the_body_should_be_lazy expected_body
+  >! then_the_body_should_be_lazy expected_body
 
 let suite =
   ( "[GET] /todo/{id}",

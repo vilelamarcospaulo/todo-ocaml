@@ -11,10 +11,11 @@ type 'a context = {
   response : 'a response option;
 }
 
-type 'a step = 'a context -> 'a context
+let ( >!> ) ctx f = f ctx
 
-let bind (ctx : 'a context) (f : 'a step) = f ctx
-let ( >!> ) = bind
+let ( >! ) ctx f =
+  let _res = ctx >!> f in
+  ()
 
 (**)
 let setup runner db = { runner; db; request = None; response = None }

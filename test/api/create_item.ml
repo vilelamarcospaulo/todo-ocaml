@@ -8,7 +8,7 @@ let create_item_invaid_payload_flow setup =
   >!> when_the_request_is_sent
   >!> then_the_status_should_be 400
   >!> then_the_body_should_be "Invalid request"
-  >!> then_db_should_not_have_any_items Todo.Item.Q.count_all
+  >! then_db_should_not_have_any_items Todo.Item.Q.count_all
 
 let create_todo ?(to_create : Todo.Item.t_new_item = { title = "foo"; description = "bar" }) setup =
   let body = to_create |> Todo.Item.yojson_of_t_new_item |> Yojson.Safe.to_string in
@@ -31,7 +31,7 @@ let create_todo_succesfully_flow setup =
   create_todo setup
   >!> then_the_body_should_be expected_body
   >!> then_body_should_apply_to (fun item -> item = expected_created_item)
-  >!> then_db_should_have_n 1 Todo.Item.Q.count_all
+  >! then_db_should_have_n 1 Todo.Item.Q.count_all
 
 let suite =
   ( "[POST] /todo",

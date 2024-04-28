@@ -10,7 +10,7 @@ let test_delete_unexistend setup =
           Dream.request ~method_:`DELETE ~target:url "")
   >!> when_the_request_is_sent
   >!> then_the_status_should_be 404
-  >!> then_the_body_should_be "Record not found"
+  >! then_the_body_should_be "Record not found"
 
 let test_delete_by_id setup =
   create_todo setup
@@ -21,7 +21,7 @@ let test_delete_by_id setup =
           Dream.request ~method_:`DELETE ~target:url "")
   >!> when_the_request_is_sent
   >!> then_the_status_should_be 200
-  >!> then_db_should_not_have_any_items Todo.Item.Q.count_all
+  >! then_db_should_not_have_any_items Todo.Item.Q.count_all
 
 let suite =
   ( "[DELETE] /todo/{id}",
