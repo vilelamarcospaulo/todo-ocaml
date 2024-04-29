@@ -65,9 +65,7 @@ let then_body_should_apply_to (f : 'a -> bool) context =
   context
 
 let then_db_should_have_n expected query_count context =
-  let inner_db_count (module Db : DB) = Lwt_main.run @@ Db.find query_count () in
-  let count = Result.get_ok @@ inner_db_count context.db in
-
+  let count = Result.get_ok @@ Lwt_main.run @@ query_count context.db in
   Alcotest.(check int) "Check the number of items by db_query" expected count;
 
   context

@@ -29,14 +29,27 @@ let from_body req ty_of_yojson =
 let json_response result =
   match result with Ok result -> Dream.json ~code:200 result | Error e -> Err.to_response e
 
+let req_to_page_params req =
+  let page = Dream.query req "page" in
+  let page_size = Dream.query req "page_size" in
+
+  if Option.is_none page || Option.is_none page_size then None
+  else
+    let page = Option.get page |> int_of_string in
+    let size = Option.get page_size |> int_of_string in
+
+    Some { Sql.Page.page; size }
+
 let create_todo_handler req db =
   from_body req Item.t_new_item_of_yojson
   >>@ Item.create db
   >> to_json Item.yojson_of_item
   >>= json_response
 
-let query_todo_handler _req db =
-  Item.query db >> to_json (Sql.Page.yojson_of_page Item.yojson_of_item) >>= json_response
+let query_todo_handler req db =
+  Item.query db (req_to_page_params req)
+  >> to_json (Sql.Page.yojson_of_page Item.yojson_of_item)
+  >>= json_response
 
 let fetch_todo_handler id _req db =
   Item.by_id db id >> to_json Item.yojson_of_item >>= json_response

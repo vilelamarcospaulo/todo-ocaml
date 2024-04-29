@@ -23,17 +23,18 @@ module Q = struct
   let query (module Db : DB) (page_params : Sql.Page.page_params_opt) =
     match page_params with
     | None -> Db.collect_list all ()
-    | Some { page; per_page } ->
-        let offset = (page - 1) * per_page in
-        let limit = per_page in
+    | Some { page; size } ->
+        let offset = (page - 1) * size in
+        let limit = size in
         let catqi_query =
           (T.tup2 T.int T.int ->* T.tup4 T.int T.string T.string (T.option T.ptime))
-          @@ "SELECT id, title, description, completed_at FROM todos OFFSET ? LIMIT ?;"
+          @@ "SELECT id, title, description, completed_at FROM todos LIMIT ? OFFSET ?;"
         in
 
-        Db.collect_list catqi_query (offset, limit)
+        Db.collect_list catqi_query (limit, offset)
 
-  let count_all = (T.unit ->! T.int) @@ "SELECT count(id) FROM todos;"
+  let query_count (module Db : DB) =
+    Db.find ((T.unit ->! T.int) @@ "SELECT count(id) FROM todos;") ()
 
   let create (module Db : DB) new_item =
     let caqti_query =
